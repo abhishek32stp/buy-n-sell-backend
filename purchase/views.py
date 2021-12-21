@@ -16,7 +16,9 @@ def serialize(cols,rows):
 def getUid(request):
     return random.randint(0,10)
 
+
 def putBuyReq(request,pid):
+    #if(request.method!="POST") : return HttpResponse(request.method+"  request not allowed")
     user=getUid(request)
     try:
         obj=PurchaseReq(buy_user=user,pid=pid)
@@ -49,3 +51,13 @@ def getAllBuyReq(request):
     objs=serialize([dec[0] for dec in cursor.description],rows)
     return JsonResponse(objs,safe=False)
     
+
+
+def getAllBuyProd(request):
+    user=getUid(request)
+    cursor=connection.cursor()
+    cursor.execute("select * from purchase_purchasereq p_req,product_product prod "+
+                    "where p_req.buy_user="+str(user)+" and p_req.pid=prod.key")
+    rows=cursor.fetchall()
+    objs=serialize([dec[0] for dec in cursor.description],rows)
+    return JsonResponse(objs,safe=False)
