@@ -1,3 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import ugettext_lazy
+from django.core.validators import RegexValidator
 
-# Create your models here.
+
+from .managers import *
+
+
+class CustomUser(AbstractUser):
+    username = None
+    email = models.EmailField(ugettext_lazy('email address'), unique=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username','password','phone_no']
+
+    objects = CustomUserManager()
+
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Enter a Valid Phone number Up to 15 digits.")
+    phone_no=models.CharField(validators=[phone_regex], max_length=17, blank=True)
+    
+
+    def __str__(self):
+        return self.email
